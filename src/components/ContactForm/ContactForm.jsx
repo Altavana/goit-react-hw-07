@@ -1,10 +1,9 @@
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { useId } from "react";
 import * as Yup from "yup";
-import { nanoid } from "nanoid";
 import style from "./ContactForm.module.css";
 import { useDispatch } from "react-redux";
-import { addContact } from "../../redux/contactsSlice.js";
+import { addContact } from "../../redux/contactsOps";
 
 const initialValues = {
   name: "",
@@ -18,7 +17,7 @@ const validationSchema = Yup.object({
     .matches(/^[aA-zZ\s]+$/, "Please use Latin alphabet")
     .required("Required field"),
   number: Yup.string()
-    .matches(/^\d{3}-\d{2}-\d{2}$/, "Phone number must be like xxx-xx-xx")
+    .matches(/^\d{3}-\d{3}-\d{4}$/, "Phone number must be like xxx-xxx-xxxx")
     .required("Required field"),
 });
 
@@ -26,11 +25,10 @@ const ContactForm = () => {
   const dispatch = useDispatch();
   const nameFieldId = useId();
   const numberFieldId = useId();
-
   const handleSubmit = (values, actions) => {
     const newContact = {
-      ...values,
-      id: nanoid(),
+      name: values.name,
+      number: values.number,
     };
     const action = addContact(newContact);
     dispatch(action);
@@ -63,7 +61,7 @@ const ContactForm = () => {
           type="text"
           name="number"
           className={style.field}
-          placeholder="xxx-xx-xx"
+          placeholder="xxx-xxx-xxxx"
         />
         <ErrorMessage className={style.error} name="number" component="span" />
         <button type="submit" className={style.addButton}>
